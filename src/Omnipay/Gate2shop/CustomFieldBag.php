@@ -48,7 +48,8 @@ class CustomFieldBag implements \IteratorAggregate, \Countable
     /**
      * Add an custom field to the bag
      *
-     * @param CustomFieldInterface|array $customfield An existing custom field, or associative array of custom field parameters
+     * @param CustomFieldInterface|array $customfield An existing custom field,
+     * or associative array of custom field parameters
      */
     public function add($customfield)
     {
