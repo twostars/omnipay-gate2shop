@@ -85,7 +85,7 @@ class PurchaseRequest extends AbstractRequest
 
     public function getMerchantLocale()
     {
-        $merchantLocales = [
+        $merchantLocales = array(
             'en'    => 'en_US',
             'it'    => 'it_IT',
             'es'    => 'Es_ES',
@@ -108,7 +108,7 @@ class PurchaseRequest extends AbstractRequest
             'sr'    => 'sr_RS',
             'hr'    => 'hr_HR',
             'ro'    => 'ro_RO'
-        ];
+        );
 
         return (isset($merchantLocales[$this->getParameter('merchantLocale')])) ?
             $merchantLocales[$this->getParameter('merchantLocale')] :

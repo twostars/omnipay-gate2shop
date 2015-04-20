@@ -21,7 +21,7 @@ class CompletePurchaseRequest extends PurchaseRequest
         $items = array();
         $n = 1;
         for ($n = 1; $this->httpRequest->get("item_name_$n"); ++$n) {
-            $item = [
+            $item = array(
                 // The only two mandatory fields are item_name_X & item_amount_X.
                 'name' => $this->httpRequest->get("item_name_$n"),
                 'amount' => $this->httpRequest->get("item_amount_$n"),
@@ -30,7 +30,7 @@ class CompletePurchaseRequest extends PurchaseRequest
                 'discount' => $this->httpRequest->get("item_discount_$n"),
                 'handling' => $this->httpRequest->get("item_handling_$n"),
                 'shipping' => $this->httpRequest->get("item_shipping_$n"),
-            ];
+            );
 
             // Enforce the existing of mandatory fields.
             if (empty($item['name'])) {

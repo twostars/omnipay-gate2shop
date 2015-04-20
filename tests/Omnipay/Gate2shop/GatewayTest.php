@@ -16,17 +16,17 @@ class GatewayTest extends GatewayTestCase
         $this->gateway->setMerchantSiteId('');
         $this->gateway->setSecretKey('');
 
-        $this->options = [
+        $this->options = array(
             'currency'  => 'USD',
-            'items'     => [
-                ['name' => 'Item Name 1', 'quantity' => 1, 'price' => '5'],
-                ['name' => 'Item Name 2', 'quantity' => 1, 'price' => '5']
-            ],
-            'customfields' => [
-                ['name' => 'customField1', 'value' => 'customField1 value'],
-                ['name' => 'customField2', 'value' => 'customField2 value']
-            ]
-        ];
+            'items'     => array(
+                array('name' => 'Item Name 1', 'quantity' => 1, 'price' => '5'),
+                array('name' => 'Item Name 2', 'quantity' => 1, 'price' => '5')
+            ),
+            'customfields' => array(
+                array('name' => 'customField1', 'value' => 'customField1 value'),
+                array('name' => 'customField2', 'value' => 'customField2 value')
+            )
+        );
     }
 
     public function testPurchase()
