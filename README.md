@@ -19,7 +19,7 @@ to your `composer.json` file:
 ```json
 {
     "require": {
-        "mfauveau/omnipay-gate2shop": "~2.0"
+        "mfauveau/omnipay-gate2shop": "dev-master"
     }
 }
 ```
