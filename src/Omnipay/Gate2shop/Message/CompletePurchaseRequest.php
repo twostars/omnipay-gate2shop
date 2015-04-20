@@ -1,6 +1,7 @@
 <?php
 
 namespace Omnipay\Gate2shop\Message;
+
 use Omnipay\Common\Exception\InvalidResponseException;
 
 /**
@@ -10,14 +11,65 @@ class CompletePurchaseRequest extends PurchaseRequest
 {
     public function getData()
     {
+        // This is required to pass coding style standards.
+        // Omnipay forces us to name it setPPP_TransactionId, but
+        // the 'camel caps' rule strictly enforces no underscores.
+        $this->setPPPTransactionId($this->httpRequest->get('PPP_TransactionID'));
+        
+        // Build a list of supplied items, as it's not handled very nicely;
+        // we don't know how many items are provided, so we have to bruteforce it.
+        $items = array();
+        $n = 1;
+        for ($n = 1; $this->httpRequest->get("item_name_$n"); ++$n) {
+            $item = [
+                // The only two mandatory fields are item_name_X & item_amount_X.
+                'name' => $this->httpRequest->get("item_name_$n"),
+                'amount' => $this->httpRequest->get("item_amount_$n"),
+                // The following are optional.
+                'quantity' => $this->httpRequest->get("item_quantity_$n"),
+                'discount' => $this->httpRequest->get("item_discount_$n"),
+                'handling' => $this->httpRequest->get("item_handling_$n"),
+                'shipping' => $this->httpRequest->get("item_shipping_$n"),
+            ];
+
+            // Enforce the existing of mandatory fields.
+            if (empty($item['name'])) {
+                throw new InvalidResponseException('The name parameter is required.');
+            }
+
+            if (empty($item['amount'])) {
+                throw new InvalidResponseException('The amount parameter is required.');
+            }
+            
+            $items[] = $item;
+        }
+
+        // We require at least one item.
+        if (empty($items)) {
+            throw new InvalidResponseException('Item fields are mandatory.');
+        }
+
+        $this->setItems($items);
+
         // Mandatory fields.
         $this->validate(
-            'ppp_status', 'PPP_TransactionID', 'totalAmount', 'currency', 'responsechecksum', 'advanceresponsechecksum',
-            'merchant_site_id', 'requestVersion', 'message', 'payment_method', 'merchant_id', 'responseTimeStamp',
-            'dynamicDescriptor', 'clientIp',
-            'item_name_1', 'item_amount_1',
+            'ppp_status',
+            'PPP_TransactionID',
+            'totalAmount',
+            'currency',
+            'responsechecksum',
+            'advanceresponsechecksum',
+            'merchant_site_id',
+            'requestVersion',
+            'message',
+            'payment_method',
+            'merchant_id',
+            'responseTimeStamp',
+            'dynamicDescriptor',
+            'clientIp',
             // Not officially deemed mandatory, but required as part of the checksum.
-            'Status');
+            'Status'
+        );
             
         $expectedChecksum = $this->createAdvanceResponseChecksum();
         if ($this->getAdvanceResponseChecksum() !== $expectedChecksum) {
@@ -57,12 +109,12 @@ class CompletePurchaseRequest extends PurchaseRequest
         return $this->setParameter('responseTimeStamp', $value);
     }
 
-    public function getPPP_TransactionID()
+    public function getPPPTransactionId()
     {
         return $this->getParameter('PPP_TransactionID');
     }
     
-    public function setPPP_TransactionID($value)
+    public function setPPPTransactionId($value)
     {
         return $this->setParameter('PPP_TransactionID', $value);
     }
@@ -190,7 +242,7 @@ class CompletePurchaseRequest extends PurchaseRequest
         $checksum .= $this->getTotalAmount();
         $checksum .= $this->getCurrency();
         $checksum .= $this->getResponseTimestamp();
-        $checksum .= $this->getPPP_TransactionID();
+        $checksum .= $this->getPPPTransactionId();
         $checksum .= $this->getStatus();
 
         if (!empty($this->getProductId())) {
