@@ -245,8 +245,9 @@ class CompletePurchaseRequest extends PurchaseRequest
         $checksum .= $this->getPPPTransactionId();
         $checksum .= $this->getStatus();
 
-        if (!empty($this->getProductId())) {
-            $checksum .= $this->getProductId();
+        $productId = $this->getProductId();
+        if (!empty($productId)) {
+            $checksum .= $productId;
         } else {
             foreach ($this->getItems() as $item) {
                 $checksum .= $item->getName();
