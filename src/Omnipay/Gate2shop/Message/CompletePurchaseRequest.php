@@ -19,7 +19,6 @@ class CompletePurchaseRequest extends PurchaseRequest
         // Build a list of supplied items, as it's not handled very nicely;
         // we don't know how many items are provided, so we have to bruteforce it.
         $items = array();
-        $n = 1;
         for ($n = 1; $this->httpRequest->get("item_name_$n"); ++$n) {
             $item = array(
                 // The only two mandatory fields are item_name_X & item_amount_X.
