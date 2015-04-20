@@ -4,7 +4,6 @@ namespace Omnipay\Gate2shop;
 
 use Omnipay\Common\AbstractGateway;
 use Omnipay\Gate2shop\Message\PurchaseRequest;
-use Omnipay\Gate2shop\Message\CompletePurchaseRequest;
 
 /**
  * Gate2shop Gateway
@@ -23,7 +22,8 @@ class Gateway extends AbstractGateway
         return array(
             'merchantSiteId' => '',
             'merchantId'     => '',
-            'secretKey'      => ''
+            'secretKey'      => '',
+            'customSiteName' => ''
         );
     }
 
@@ -57,13 +57,18 @@ class Gateway extends AbstractGateway
         return $this->setParameter('secretKey', $value);
     }
 
+    public function getCustomSiteName()
+    {
+        return $this->getParameter('customSiteName');
+    }
+
+    public function setCustomSiteName($value)
+    {
+        return $this->setParameter('customSiteName', $value);
+    }
+
     public function purchase(array $parameters = array())
     {
         return $this->createRequest('\Omnipay\Gate2shop\Message\PurchaseRequest', $parameters);
-    }
-
-    public function completePurchase(array $parameters = array())
-    {
-        return $this->createRequest('\Omnipay\Gate2shop\Message\CompletePurchaseRequest', $parameters);
     }
 }
