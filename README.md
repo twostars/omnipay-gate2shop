@@ -4,7 +4,7 @@
 
 **Gate2Shop driver for the Omnipay PHP payment processing library**
 
-[![Build Status](https://travis-ci.org/mfauveau/omnipay-gate2shop.png?branch=master)](https://travis-ci.org/mfauveau/omnipay-gate2shop)
+[![Build Status](https://travis-ci.org/twostars/omnipay-gate2shop.png?branch=master)](https://travis-ci.org/twostars/omnipay-gate2shop)
 [![Latest Stable Version](https://poser.pugx.org/mfauveau/omnipay-gate2shop/version.png)](https://packagist.org/packages/mfauveau/omnipay-gate2shop)
 [![Total Downloads](https://poser.pugx.org/mfauveau/omnipay-gate2shop/d/total.png)](https://packagist.org/packages/mfauveau/omnipay-gate2shop)
 
