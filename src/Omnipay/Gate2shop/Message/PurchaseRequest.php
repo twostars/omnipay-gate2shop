@@ -26,7 +26,7 @@ class PurchaseRequest extends AbstractRequest
 
     public function getTimestamp()
     {
-        return date("Y-m-d.h:i:s");
+        return date('Y-m-d.h:i:s');
     }
 
     public function getMerchantSiteId()
