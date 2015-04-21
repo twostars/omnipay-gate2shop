@@ -18,32 +18,27 @@ class CompletePurchaseResponse extends AbstractResponse
     {
         // message & Error fields are generic enough to be useless for most cases.
         // Reason, however, consistently provides more informative messages.
-        if (isset($this->data['Reason']))
-            return $this->data['Reason'];
+        return isset($this->data['Reason']) ? $this->data['Reason'] : null;
     }
 
     public function getCode()
     {
         // OK, PENDING, or FAIL.
-        if (isset($this->data['ppp_status']))
-            return $this->data['ppp_status'];
+        return isset($this->data['ppp_status']) ? $this->data['ppp_status'] : null;
     }
 
     public function getErrCode()
     {
-        if (isset($this->data['ErrCode']))
-            return $this->data['ErrCode'];
+        return isset($this->data['ErrCode']) ? $this->data['ErrCode'] : null;
     }
 
     public function getExErrCode()
     {
-        if (isset($this->data['ExErrCode']))
-            return $this->data['ExErrCode'];
+        return isset($this->data['ExErrCode']) ? $this->data['ExErrCode'] : null;
     }
 
     public function getTransactionReference()
     {
-        if (isset($this->data['PPP_TransactionID']))
-            return $this->data['PPP_TransactionID'];
+        return isset($this->data['PPP_TransactionID']) ? $this->data['PPP_TransactionID'] : null;
     }
 }
