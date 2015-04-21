@@ -71,7 +71,7 @@ class CompletePurchaseRequest extends PurchaseRequest
         $checksum .= $this->httpRequest->query->get('Status');
 
         // If this parameter was not sent to Gate2shop, then
-	    // [Gate2shop will] concatenate all item names.
+        // [Gate2shop will] concatenate all item names.
         $checksum .= $this->httpRequest->query->get('productId');
         
         return md5($checksum);
