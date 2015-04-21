@@ -4,7 +4,6 @@ namespace Omnipay\Gate2shop\Message;
 
 use Omnipay\Common\Exception\InvalidResponseException;
 use Omnipay\Common\Exception\InvalidRequestException;
-use Omnipay\Gate2shop\Message\PurchaseRequest;
 
 /**
  * Gate2shop Complete Purchase Request
@@ -62,21 +61,6 @@ class CompletePurchaseRequest extends PurchaseRequest
 
     public function createAdvanceResponseChecksum()
     {
-        /*
-        To create a DMN response checksum:
-            1. Concatenate the following parameters in the exact order listed below:
-                a. Your secret key
-                b. From the DMN callback:
-                    * totalAmount
-                    * Currency
-                    * responseTimeStamp
-                    * PPP_TransactionID
-                    * Status
-                    * productId (If this parameter was not sent to Gate2Shop, then [Gate2shop will] concatenate all item names)
-            2. Use MD5 hash on the result string of the concatenation. Use encoding passed to the PPP
-               from the vendor site to create the MD5 hash. The default encoding is UTF-8 (unless the
-               encoding PP input parameter specifies otherwise).
-        */
         $checksum = '';
 
         $checksum .= $this->getSecretKey();
@@ -85,6 +69,9 @@ class CompletePurchaseRequest extends PurchaseRequest
         $checksum .= $this->httpRequest->query->get('responseTimeStamp');
         $checksum .= $this->httpRequest->query->get('PPP_TransactionID');
         $checksum .= $this->httpRequest->query->get('Status');
+
+        // If this parameter was not sent to Gate2shop, then
+	    // [Gate2shop will] concatenate all item names.
         $checksum .= $this->httpRequest->query->get('productId');
         
         return md5($checksum);

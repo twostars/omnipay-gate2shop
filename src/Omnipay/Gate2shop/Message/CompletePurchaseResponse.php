@@ -11,6 +11,6 @@ class CompletePurchaseResponse extends AbstractResponse
 {
     public function isSuccessful()
     {
-        return true;
+        return $this->data['ppp_status'] === 'OK';
     }
 }
