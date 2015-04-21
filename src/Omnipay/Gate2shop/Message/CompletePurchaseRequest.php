@@ -94,7 +94,6 @@ class CompletePurchaseRequest extends PurchaseRequest
             $checksum .= $productId;
         } else {
             // We don't know how many items are provided, so we have to bruteforce it.
-            $itemNames = '';
             for ($n = 1;; ++$n) {
                 $itemName = $this->httpRequest->query->get("item_name_$n");
                 if ($itemName === null) {
@@ -103,7 +102,7 @@ class CompletePurchaseRequest extends PurchaseRequest
 
                 // Enforce the existence of the two mandatory item fields.
                 $this->httpGetValidate("item_name_$n", "item_amount_$n");
-                $itemNames .= $itemName;
+                $checksum .= $itemName;
             }
         }
         
