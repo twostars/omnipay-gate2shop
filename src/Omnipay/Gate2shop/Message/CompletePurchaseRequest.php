@@ -39,7 +39,7 @@ class CompletePurchaseRequest extends PurchaseRequest
             'totalAmount',
             'currency',
             'responsechecksum',
-            'advanceresponsechecksum',
+            'advanceResponseChecksum',
             'merchant_site_id',
             'requestVersion',
             'message',
@@ -47,16 +47,13 @@ class CompletePurchaseRequest extends PurchaseRequest
             'merchant_id',
             'responseTimeStamp',
             'dynamicDescriptor',
-            'clientIp',
-            // Require at least one item.
-            'item_name_1',
-            'item_amount_1',
-            // Not officially deemed mandatory, but required as part of the checksum.
-            'Status'
+            'productId', /* not deemed mandatory but supplied as either the productId or list of item names */
+            'item_amount_1', /* 1 item is required. item_name_1 is deemed mandatory also, but not actually supplied */
+            'Status' /* not deemed mandatory but used as part of the checksum */
         );
 
         $expectedChecksum = $this->createAdvanceResponseChecksum();
-        if ($this->httpRequest->query->get('advanceresponsechecksum') !== $expectedChecksum) {
+        if ($this->httpRequest->query->get('advanceResponseChecksum') !== $expectedChecksum) {
             throw new InvalidResponseException('Invalid advanceResponseChecksum');
         }
 
@@ -75,7 +72,7 @@ class CompletePurchaseRequest extends PurchaseRequest
                     * responseTimeStamp
                     * PPP_TransactionID
                     * Status
-                    * productId (If this parameter was not sent to Gate2Shop, then concatenate all item names)
+                    * productId (If this parameter was not sent to Gate2Shop, then [Gate2shop will] concatenate all item names)
             2. Use MD5 hash on the result string of the concatenation. Use encoding passed to the PPP
                from the vendor site to create the MD5 hash. The default encoding is UTF-8 (unless the
                encoding PP input parameter specifies otherwise).
@@ -84,27 +81,11 @@ class CompletePurchaseRequest extends PurchaseRequest
 
         $checksum .= $this->getSecretKey();
         $checksum .= $this->httpRequest->query->get('totalAmount');
-        $checksum .= $this->httpRequest->query->get('Currency');
-        $checksum .= $this->httpRequest->query->get('ResponseTimeStamp');
+        $checksum .= $this->httpRequest->query->get('currency');
+        $checksum .= $this->httpRequest->query->get('responseTimeStamp');
         $checksum .= $this->httpRequest->query->get('PPP_TransactionID');
         $checksum .= $this->httpRequest->query->get('Status');
-
-        $productId = $this->httpRequest->query->get('productId');
-        if (!empty($productId)) {
-            $checksum .= $productId;
-        } else {
-            // We don't know how many items are provided, so we have to bruteforce it.
-            for ($n = 1;; ++$n) {
-                $itemName = $this->httpRequest->query->get("item_name_$n");
-                if ($itemName === null) {
-                    break;
-                }
-
-                // Enforce the existence of the two mandatory item fields.
-                $this->httpGetValidate("item_name_$n", "item_amount_$n");
-                $checksum .= $itemName;
-            }
-        }
+        $checksum .= $this->httpRequest->query->get('productId');
         
         return md5($checksum);
     }
