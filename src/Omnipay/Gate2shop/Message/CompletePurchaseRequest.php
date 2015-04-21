@@ -3,55 +3,37 @@
 namespace Omnipay\Gate2shop\Message;
 
 use Omnipay\Common\Exception\InvalidResponseException;
+use Omnipay\Common\Exception\InvalidRequestException;
+use Omnipay\Gate2shop\Message\PurchaseRequest;
 
 /**
  * Gate2shop Complete Purchase Request
  */
 class CompletePurchaseRequest extends PurchaseRequest
 {
+    /**
+     * Validate the request.
+     *
+     * This method is called internally by gateways to avoid wasting time with an API call
+     * when the request is clearly invalid.
+     *
+     * @param string ... a variable length list of required parameters
+     * @throws InvalidRequestException
+     */
+    public function httpGetValidate()
+    {
+        foreach (func_get_args() as $key) {
+            $value = $this->httpRequest->query->get($key);
+            if (empty($value)) {
+                throw new InvalidRequestException("The $key GET parameter is required");
+            }
+        }
+    }
+
     public function getData()
     {
-        // This is required to pass coding style standards.
-        // Omnipay forces us to name it setPPP_TransactionId, but
-        // the 'camel caps' rule strictly enforces no underscores.
-        $this->setPPPTransactionId($this->httpRequest->get('PPP_TransactionID'));
-        
-        // Build a list of supplied items, as it's not handled very nicely;
-        // we don't know how many items are provided, so we have to bruteforce it.
-        $items = array();
-        for ($n = 1; $this->httpRequest->get("item_name_$n"); ++$n) {
-            $item = array(
-                // The only two mandatory fields are item_name_X & item_amount_X.
-                'name' => $this->httpRequest->get("item_name_$n"),
-                'amount' => $this->httpRequest->get("item_amount_$n"),
-                // The following are optional.
-                'quantity' => $this->httpRequest->get("item_quantity_$n"),
-                'discount' => $this->httpRequest->get("item_discount_$n"),
-                'handling' => $this->httpRequest->get("item_handling_$n"),
-                'shipping' => $this->httpRequest->get("item_shipping_$n"),
-            );
-
-            // Enforce the existing of mandatory fields.
-            if (empty($item['name'])) {
-                throw new InvalidResponseException('The name parameter is required.');
-            }
-
-            if (empty($item['amount'])) {
-                throw new InvalidResponseException('The amount parameter is required.');
-            }
-            
-            $items[] = $item;
-        }
-
-        // We require at least one item.
-        if (empty($items)) {
-            throw new InvalidResponseException('Item fields are mandatory.');
-        }
-
-        $this->setItems($items);
-
         // Mandatory fields.
-        $this->validate(
+        $this->httpGetValidate(
             'ppp_status',
             'PPP_TransactionID',
             'totalAmount',
@@ -66,156 +48,19 @@ class CompletePurchaseRequest extends PurchaseRequest
             'responseTimeStamp',
             'dynamicDescriptor',
             'clientIp',
+            // Require at least one item.
+            'item_name_1',
+            'item_amount_1',
             // Not officially deemed mandatory, but required as part of the checksum.
             'Status'
         );
-            
+
         $expectedChecksum = $this->createAdvanceResponseChecksum();
-        if ($this->getAdvanceResponseChecksum() !== $expectedChecksum) {
+        if ($this->httpRequest->query->get('advanceresponsechecksum') !== $expectedChecksum) {
             throw new InvalidResponseException('Invalid advanceResponseChecksum');
         }
 
-        return $this->httpRequest->request->all();
-    }
-
-    public function getResponseChecksum()
-    {
-        return $this->getParameter('responsechecksum');
-    }
-    
-    public function setResponseChecksum($value)
-    {
-        return $this->setParameter('responsechecksum', $value);
-    }
-    
-    public function getAdvanceResponseChecksum()
-    {
-        return $this->getParameter('advanceresponsechecksum');
-    }
-
-    public function setAdvanceResponseChecksum($value)
-    {
-        return $this->setParameter('advanceresponsechecksum', $value);
-    }
-    
-    public function getResponseTimestamp()
-    {
-        return $this->getParameter('responseTimeStamp');
-    }
-
-    public function setResponseTimestamp($value)
-    {
-        return $this->setParameter('responseTimeStamp', $value);
-    }
-
-    public function getPPPTransactionId()
-    {
-        return $this->getParameter('PPP_TransactionID');
-    }
-    
-    public function setPPPTransactionId($value)
-    {
-        return $this->setParameter('PPP_TransactionID', $value);
-    }
-    
-    public function getPPPStatus()
-    {
-        return $this->getParameter('ppp_status');
-    }
-    
-    public function setPPPStatus($value)
-    {
-        return $this->setParameter('ppp_status', $value);
-    }
-
-    public function getStatus()
-    {
-        return $this->getParameter('Status');
-    }
-    
-    public function setStatus($value)
-    {
-        return $this->setParameter('Status', $value);
-    }
-
-    public function getProductId()
-    {
-        return $this->getParameter('productId');
-    }
-
-    public function setProductId($value)
-    {
-        return $this->setParameter('productId', $value);
-    }
-    
-    public function getTotalAmount()
-    {
-        return $this->getParameter('totalAmount');
-    }
-    
-    public function setTotalAmount($value)
-    {
-        return $this->setParameter('totalAmount', $value);
-    }
-    
-    public function getMerchantSiteId()
-    {
-        return $this->getParameter('merchant_site_id');
-    }
-    
-    public function setMerchantSiteId($value)
-    {
-        return $this->setParameter('merchant_site_id', $value);
-    }
-    
-    public function getRequestVersion()
-    {
-        return $this->getParameter('requestVersion');
-    }
-    
-    public function setRequestVersion($value)
-    {
-        return $this->setParameter('requestVersion', $value);
-    }
-    
-    public function getMessage()
-    {
-        return $this->getParameter('message');
-    }
-    
-    public function setMessage($value)
-    {
-        return $this->setParameter('message', $value);
-    }
-    
-    public function getPaymentMethod()
-    {
-        return $this->getParameter('payment_method');
-    }
-    
-    public function setPaymentMethod($value)
-    {
-        return $this->setParameter('payment_method', $value);
-    }
-    
-    public function getMerchantID()
-    {
-        return $this->getParameter('merchant_id');
-    }
-    
-    public function setMerchantID($value)
-    {
-        return $this->setParameter('merchant_id', $value);
-    }
-    
-    public function getDynamicDescriptor()
-    {
-        return $this->getParameter('dynamicDescriptor');
-    }
-    
-    public function setDynamicDescriptor($value)
-    {
-        return $this->setParameter('dynamicDescriptor', $value);
+        return $this->httpRequest->query->all();
     }
 
     public function createAdvanceResponseChecksum()
@@ -238,18 +83,26 @@ class CompletePurchaseRequest extends PurchaseRequest
         $checksum = '';
 
         $checksum .= $this->getSecretKey();
-        $checksum .= $this->getTotalAmount();
-        $checksum .= $this->getCurrency();
-        $checksum .= $this->getResponseTimestamp();
-        $checksum .= $this->getPPPTransactionId();
-        $checksum .= $this->getStatus();
+        $checksum .= $this->httpRequest->query->get('totalAmount');
+        $checksum .= $this->httpRequest->query->get('Currency');
+        $checksum .= $this->httpRequest->query->get('ResponseTimeStamp');
+        $checksum .= $this->httpRequest->query->get('PPP_TransactionID');
+        $checksum .= $this->httpRequest->query->get('Status');
 
-        $productId = $this->getProductId();
+        $productId = $this->httpRequest->query->get('productId');
         if (!empty($productId)) {
             $checksum .= $productId;
         } else {
-            foreach ($this->getItems() as $item) {
-                $checksum .= $item->getName();
+            // We don't know how many items are provided, so we have to bruteforce it.
+            $itemNames = '';
+            for ($n = 1; ; ++$n) {
+                $itemName = $this->httpRequest->query->get("item_name_$n");
+                if ($itemName === null)
+                    break;
+
+                // Enforce the existence of the two mandatory item fields.
+                $this->httpGetValidate("item_name_$n", "item_amount_$n");
+                $itemNames .= $itemName;
             }
         }
         
