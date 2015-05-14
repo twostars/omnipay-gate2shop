@@ -13,6 +13,11 @@ class CompletePurchaseResponse extends AbstractResponse
     {
         return $this->getErrCode() === '0';
     }
+    
+    public function isPending()
+    {
+        return $this->getCode() === 'PENDING';
+    }
 
     public function getMessage()
     {
