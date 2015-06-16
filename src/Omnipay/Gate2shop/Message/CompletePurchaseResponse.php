@@ -11,9 +11,9 @@ class CompletePurchaseResponse extends AbstractResponse
 {
     public function isSuccessful()
     {
-        return $this->getErrCode() === '0';
+        return $this->getCode() !== 'FAIL' && $this->getErrCode() === '0';
     }
-    
+
     public function isPending()
     {
         return $this->getCode() === 'PENDING';

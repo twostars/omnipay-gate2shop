@@ -22,8 +22,7 @@ class CompletePurchaseRequest extends PurchaseRequest
     public function httpGetValidate()
     {
         foreach (func_get_args() as $key) {
-            $value = $this->httpRequest->query->get($key);
-            if (empty($value)) {
+            if (!isset($_GET[$key])) {
                 throw new InvalidRequestException("The $key GET parameter is required");
             }
         }
@@ -52,7 +51,7 @@ class CompletePurchaseRequest extends PurchaseRequest
         );
 
         $expectedChecksum = $this->createAdvanceResponseChecksum();
-        if ($this->httpRequest->query->get('advanceResponseChecksum') !== $expectedChecksum) {
+        if ($_GET['advanceResponseChecksum'] !== $expectedChecksum) {
             throw new InvalidResponseException('Invalid advanceResponseChecksum');
         }
 
@@ -64,15 +63,15 @@ class CompletePurchaseRequest extends PurchaseRequest
         $checksum = '';
 
         $checksum .= $this->getSecretKey();
-        $checksum .= $this->httpRequest->query->get('totalAmount');
-        $checksum .= $this->httpRequest->query->get('currency');
-        $checksum .= $this->httpRequest->query->get('responseTimeStamp');
-        $checksum .= $this->httpRequest->query->get('PPP_TransactionID');
-        $checksum .= $this->httpRequest->query->get('Status');
+        $checksum .= $_GET['totalAmount'];
+        $checksum .= $_GET['currency'];
+        $checksum .= $_GET['responseTimeStamp'];
+        $checksum .= $_GET['PPP_TransactionID'];
+        $checksum .= $_GET['Status'];
 
         // If this parameter was not sent to Gate2shop, then
         // [Gate2shop will] concatenate all item names.
-        $checksum .= $this->httpRequest->query->get('productId');
+        $checksum .= $_GET['productId'];
         
         return md5($checksum);
     }
