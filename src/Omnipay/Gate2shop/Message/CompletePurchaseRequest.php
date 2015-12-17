@@ -40,7 +40,6 @@ class CompletePurchaseRequest extends PurchaseRequest
             'advanceResponseChecksum',
             'merchant_site_id',
             'requestVersion',
-            'message',
             'payment_method',
             'merchant_id',
             'responseTimeStamp',
