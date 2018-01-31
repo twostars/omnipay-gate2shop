@@ -5,6 +5,7 @@ namespace Omnipay\Gate2shop;
 use Omnipay\Common\AbstractGateway;
 use Omnipay\Gate2shop\Message\PurchaseRequest;
 use Omnipay\Gate2shop\Message\CompletePurchaseRequest;
+use Omnipay\Gate2shop\Message\IPNRequest;
 
 /**
  * Gate2shop Gateway
@@ -76,5 +77,10 @@ class Gateway extends AbstractGateway
     public function completePurchase(array $parameters = array())
     {
         return $this->createRequest('\Omnipay\Gate2shop\Message\CompletePurchaseRequest', $parameters);
+    }
+
+    public function ipn(array $parameters = array())
+    {
+        return $this->createRequest('\Omnipay\Gate2shop\Message\IPNRequest', $parameters);
     }
 }
